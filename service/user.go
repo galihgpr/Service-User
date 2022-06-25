@@ -4,6 +4,7 @@ import (
 	"alta-test/entities"
 	"alta-test/model"
 	"alta-test/view"
+	"fmt"
 
 	"github.com/jinzhu/copier"
 	"github.com/labstack/gommon/log"
@@ -23,13 +24,16 @@ func NewServiceModel(ModelUser model.ModelUser) *ServiceModel {
 func (s *ServiceModel) CreateUser(newUser view.AddUser) (view.RespondUser, error) {
 	var User entities.User
 	copier.Copy(&User, &newUser)
+	fmt.Println(User)
 	res, err := s.model.CreateUser(User)
 	if err != nil {
 		log.Warn(err)
 		return view.RespondUser{}, err
 	}
+	fmt.Println(res)
 	var respond view.RespondUser
 	copier.Copy(&respond, &res)
+	fmt.Println(respond)
 	return respond, nil
 }
 
