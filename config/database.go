@@ -1,6 +1,7 @@
 package config
 
 import (
+	"alta-test/entities"
 	"fmt"
 
 	"github.com/labstack/gommon/log"
@@ -27,5 +28,5 @@ func InitDB(config *AppConfig) *gorm.DB {
 }
 
 func MigrateDB(db *gorm.DB) {
-	db.AutoMigrate()
+	db.AutoMigrate(entities.User{})
 }
