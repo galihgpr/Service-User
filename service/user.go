@@ -60,7 +60,7 @@ func (s *ServiceModel) GetUserID(id uint) (view.RespondUser, error) {
 }
 
 // UPDATE DATA USER BY ID
-func (s *ServiceModel) UpdateUser(id uint, update view.UpdateUser) (view.RespondUser, error) {
+func (s *ServiceModel) UpdateUserID(id uint, update view.UpdateUser) (view.RespondUser, error) {
 	var User entities.User
 	copier.Copy(&User, &update)
 	res, err := s.model.UpdateUserID(id, User)
