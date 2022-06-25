@@ -58,9 +58,9 @@ func StatusNotFound(message string) gin.H {
 	}
 }
 
-func StatusErrorServer(message string) gin.H {
+func StatusErrorServer() gin.H {
 	return gin.H{
 		"code":    http.StatusInternalServerError,
-		"message": message,
+		"message": "Error Access Database",
 	}
 }
