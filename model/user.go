@@ -2,6 +2,8 @@ package model
 
 import (
 	"alta-test/entities"
+	"fmt"
+	"strings"
 
 	"github.com/labstack/gommon/log"
 	"gorm.io/gorm"
@@ -28,12 +30,55 @@ func (d *ModelDB) CreateUser(newUser entities.User) (entities.User, error) {
 }
 
 // GET ALL DATA USERS
-func (d *ModelDB) GetAllUsers() ([]entities.User, error) {
+func (d *ModelDB) GetAllUsers(name, role, sort string, sizePage, page int) ([]entities.User, error) {
 	var AllUsers []entities.User
-	if err := d.db.Find(&AllUsers).Error; err != nil {
+
+	filter := "SELECT * FROM users"
+	if name != "" {
+		filter += " WHERE LOWER(name) LIKE '%" + strings.ToLower(name) + "%'"
+		if role != "" {
+			filter += fmt.Sprintf(" AND role = '%s'", role)
+		}
+		if sort != "" {
+			filter += " ORDER BY name " + sort
+		}
+		if sizePage != 0 {
+			filter += fmt.Sprintf(" LIMIT %d", sizePage)
+		}
+		if page != 0 {
+			filter += fmt.Sprintf(" OFFSET %d", page*sizePage)
+		}
+	} else if role != "" {
+		filter += fmt.Sprintf(" WHERE role = '%s'", role)
+		if sort != "" {
+			filter += " ORDER BY name " + sort
+		}
+		if sizePage != 0 {
+			filter += fmt.Sprintf(" LIMIT %d", sizePage)
+		}
+		if page != 0 {
+			filter += fmt.Sprintf(" OFFSET %d", page*sizePage)
+		}
+	} else if sort != "" {
+		filter += " ORDER BY name " + sort
+		if sizePage != 0 {
+			filter += fmt.Sprintf(" LIMIT %d", sizePage)
+		}
+		if page != 0 {
+			filter += fmt.Sprintf(" OFFSET %d", page*sizePage)
+		}
+	} else if sizePage != 0 {
+		filter += fmt.Sprintf(" LIMIT %d", sizePage)
+		if page != 0 {
+			filter += fmt.Sprintf(" OFFSET %d", page*sizePage)
+		}
+	}
+	fmt.Println(filter)
+	if err := d.db.Raw(filter).Find(&AllUsers).Error; err != nil {
 		log.Warn(err)
 		return []entities.User{}, err
 	}
+
 	return AllUsers, nil
 }
 

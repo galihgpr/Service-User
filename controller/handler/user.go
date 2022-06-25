@@ -50,11 +50,45 @@ func (u *UserHandler) CreateUser() gin.HandlerFunc {
 // HANDLER GET ALL USER
 func (u *UserHandler) GetAllUsers() gin.HandlerFunc {
 	return func(c *gin.Context) {
+		name := c.Query("name")
+		role := c.Query("role")
+		sort := c.Query("sort")
+		size := c.Query("sizePage")
+		pages := c.Query("page")
+		if pages == "" {
+			pages = "0"
+		}
+		if size == "" {
+			size = "0"
+		}
+		fmt.Println(name, role, sort, "0", size, pages)
+		sizePage, err := strconv.Atoi(size)
+		if err != nil {
+			fmt.Println(err)
+			log.Warn(err)
+			c.JSON(http.StatusBadRequest, view.StatusBadRequest("Param sizePage must be integer"))
+			return
+		}
 
-		res, err := u.service.GetAllUsers()
+		page, err := strconv.Atoi(pages)
 		if err != nil {
 			log.Warn(err)
-			c.JSON(http.StatusNotFound, view.StatusNotFound("All Data User Not Found"))
+			c.JSON(http.StatusBadRequest, view.StatusBadRequest("Param page must be integer"))
+			return
+		}
+
+		if page > 0 {
+			page--
+		}
+
+		res, err := u.service.GetAllUsers(name, role, sort, sizePage, page)
+		if err != nil {
+			log.Warn(err)
+			c.JSON(http.StatusNotFound, view.StatusNotFound("Data User Not Found"))
+			return
+		}
+		if res == nil {
+			c.JSON(http.StatusNotFound, view.StatusNotFound("Data User Not Found"))
 			return
 		}
 		c.JSON(http.StatusOK, view.StatusSuccess(res, "Success get all data users"))

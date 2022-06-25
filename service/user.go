@@ -38,9 +38,9 @@ func (s *ServiceModel) CreateUser(newUser view.AddUser) (view.RespondUser, error
 }
 
 // GET ALL DATA USERS
-func (s *ServiceModel) GetAllUsers() ([]view.RespondUser, error) {
+func (s *ServiceModel) GetAllUsers(name, role, sort string, sizePage, page int) ([]view.RespondUser, error) {
 
-	res, err := s.model.GetAllUsers()
+	res, err := s.model.GetAllUsers(name, role, sort, sizePage, page)
 	if err != nil {
 		log.Warn(err)
 		return []view.RespondUser{}, err
