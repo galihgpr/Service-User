@@ -2,7 +2,6 @@ package model
 
 import (
 	"alta-test/entities"
-	"alta-test/view"
 
 	"github.com/labstack/gommon/log"
 	"gorm.io/gorm"
@@ -29,11 +28,11 @@ func (d *ModelDB) CreateUser(newUser entities.User) (entities.User, error) {
 }
 
 // GET ALL DATA USERS
-func (d *ModelDB) GetAllUsers() ([]view.RespondUser, error) {
-	var AllUsers []view.RespondUser
+func (d *ModelDB) GetAllUsers() ([]entities.User, error) {
+	var AllUsers []entities.User
 	if err := d.db.Find(&AllUsers).Error; err != nil {
 		log.Warn(err)
-		return []view.RespondUser{}, err
+		return []entities.User{}, err
 	}
 	return AllUsers, nil
 }
