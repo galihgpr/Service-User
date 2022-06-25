@@ -51,7 +51,19 @@ func (d *ModelDB) GetUserID(id uint) (entities.User, error) {
 // UPADATE DATA USER BY ID AND
 func (d *ModelDB) UpdateUserID(id uint, update entities.User) (entities.User, error) {
 	var User entities.User
-	if err := d.db.Where("id = ?", id).Updates(&update).Find(&User); err != nil {
+	if err := d.db.Where("id = ?", id).Updates(&update).Find(&User).Error; err != nil {
 		log.Warn(err)
+		return entities.User{}, err
 	}
+	return User, nil
+}
+
+// DELETE DATA USER BY ID
+func (d *ModelDB) DeleteUserID(id uint) error {
+	var delete entities.User
+	if err := d.db.Where("id = ?", id).First(&delete).Delete(&delete).Error; err != nil {
+		log.Warn(err)
+		return err
+	}
+	return nil
 }
