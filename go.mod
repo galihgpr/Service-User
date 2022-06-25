@@ -3,6 +3,7 @@ module alta-test
 go 1.18
 
 require (
+	github.com/jinzhu/copier v0.3.5
 	github.com/labstack/gommon v0.3.1
 	gorm.io/driver/postgres v1.3.7
 	gorm.io/gorm v1.23.6

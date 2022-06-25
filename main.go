@@ -3,6 +3,7 @@ package main
 import (
 	"alta-test/config"
 	"alta-test/model"
+	"alta-test/service"
 	"fmt"
 )
 
@@ -14,4 +15,7 @@ func main() {
 
 	// Inject Model
 	modelUser := model.NewModelDB(postgreDB)
+
+	// Inject Service
+	serviceUser := service.NewServiceModel(modelUser)
 }
