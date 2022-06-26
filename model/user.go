@@ -2,6 +2,7 @@ package model
 
 import (
 	"alta-test/entities"
+	"alta-test/view"
 	"fmt"
 	"strings"
 
@@ -33,7 +34,13 @@ func (d *ModelDB) CreateUser(newUser entities.User) (entities.User, error) {
 func (d *ModelDB) GetAllUsers(name, role, sort string, sizePage, page int) ([]entities.User, error) {
 	var AllUsers []entities.User
 
+	// Page Must Be Decrement 1 For Valid Offset
+	if page > 0 {
+		page--
+	}
+
 	filter := "SELECT * FROM users"
+	// Check Filter
 	if name != "" {
 		filter += " WHERE LOWER(name) LIKE '%" + strings.ToLower(name) + "%'"
 		if role != "" {
@@ -73,7 +80,7 @@ func (d *ModelDB) GetAllUsers(name, role, sort string, sizePage, page int) ([]en
 			filter += fmt.Sprintf(" OFFSET %d", page*sizePage)
 		}
 	}
-	fmt.Println(filter)
+
 	if err := d.db.Raw(filter).Find(&AllUsers).Error; err != nil {
 		log.Warn(err)
 		return []entities.User{}, err
@@ -83,9 +90,17 @@ func (d *ModelDB) GetAllUsers(name, role, sort string, sizePage, page int) ([]en
 }
 
 // GET DATA USER BY ID
-func (d *ModelDB) GetUserID(id uint) (entities.User, error) {
+func (d *ModelDB) GetUserID(id uint, role string) (entities.User, error) {
+	filter := ""
+	// User Only Access Data User With Role = "user"
+	if role == "admin" {
+		filter = fmt.Sprintf("id = %d", id)
+	} else {
+		filter = fmt.Sprintf("id = %d AND role = %s", id, role)
+	}
+
 	var User entities.User
-	if err := d.db.Where("id=?", id).First(&User).Error; err != nil {
+	if err := d.db.Where(filter).First(&User).Error; err != nil {
 		log.Warn(err)
 		return entities.User{}, err
 	}
@@ -110,4 +125,14 @@ func (d *ModelDB) DeleteUserID(id uint) error {
 		return err
 	}
 	return nil
+}
+
+// GET USER BY EMAIL && PASSWORD
+func (d *ModelDB) GetUserLogin(login view.Login) (entities.User, error) {
+	var User entities.User
+	if err := d.db.Where("email = ? AND password = ?", login.Email, login.Password).First(&User).Error; err != nil {
+		log.Warn(err)
+		return entities.User{}, err
+	}
+	return User, nil
 }

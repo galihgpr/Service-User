@@ -51,9 +51,9 @@ func (s *ServiceModel) GetAllUsers(name, role, sort string, sizePage, page int) 
 }
 
 // GET DATA USER BY ID
-func (s *ServiceModel) GetUserID(id uint) (view.RespondUser, error) {
+func (s *ServiceModel) GetUserID(id uint, role string) (view.RespondUser, error) {
 
-	res, err := s.model.GetUserID(id)
+	res, err := s.model.GetUserID(id, role)
 	if err != nil {
 		log.Warn(err)
 		return view.RespondUser{}, err
@@ -86,4 +86,17 @@ func (s *ServiceModel) DeleteUserID(id uint) error {
 		return err
 	}
 	return nil
+}
+
+// GET USER BY EMAIL AND PASSWORD
+func (s *ServiceModel) GetUserLogin(login view.Login) (view.RespondUser, error) {
+
+	res, err := s.model.GetUserLogin(login)
+	if err != nil {
+		log.Warn(err)
+		return view.RespondUser{}, err
+	}
+	var respond view.RespondUser
+	copier.Copy(&respond, &res)
+	return respond, nil
 }

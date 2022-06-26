@@ -57,3 +57,10 @@ func StatusNotFound(message string) gin.H {
 		"message": message,
 	}
 }
+
+func StatusUnauthorized(message string) gin.H {
+	return gin.H{
+		"code":    http.StatusUnauthorized,
+		"message": message,
+	}
+}
