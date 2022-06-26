@@ -6,7 +6,6 @@ import (
 	"alta-test/controller/router"
 	"alta-test/model"
 	"alta-test/service"
-	"fmt"
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
@@ -15,7 +14,6 @@ import (
 func main() {
 	appConfig := config.Get()
 	postgreDB := config.InitDB(appConfig)
-	fmt.Println(postgreDB)
 	config.MigrateDB(postgreDB)
 
 	// Inject Model
