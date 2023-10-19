@@ -1,6 +1,7 @@
 package model
 
 import (
+	"alta-test/config"
 	"alta-test/entities"
 	"alta-test/view"
 	"fmt"
@@ -14,9 +15,9 @@ type ModelDB struct {
 	db *gorm.DB
 }
 
-func NewModelDB(DB *gorm.DB) *ModelDB {
+func NewModelDB() *ModelDB {
 	return &ModelDB{
-		db: DB,
+		db: config.DB,
 	}
 }
 
@@ -40,48 +41,36 @@ func (d *ModelDB) GetAllUsers(name, role, sort string, sizePage, page int) ([]en
 	}
 
 	filter := "SELECT * FROM users"
-	// Check Filter
-	if name != "" {
-		filter += " WHERE LOWER(name) LIKE '%" + strings.ToLower(name) + "%'"
-		if role != "" {
-			filter += fmt.Sprintf(" AND role = '%s'", role)
-		}
-		if sort != "" {
-			filter += " ORDER BY name " + sort
-		}
-		if sizePage != 0 {
-			filter += fmt.Sprintf(" LIMIT %d", sizePage)
-		}
-		if page != 0 {
-			filter += fmt.Sprintf(" OFFSET %d", page*sizePage)
-		}
-	} else if role != "" {
-		filter += fmt.Sprintf(" WHERE role = '%s'", role)
-		if sort != "" {
-			filter += " ORDER BY name " + sort
-		}
-		if sizePage != 0 {
-			filter += fmt.Sprintf(" LIMIT %d", sizePage)
-		}
-		if page != 0 {
-			filter += fmt.Sprintf(" OFFSET %d", page*sizePage)
-		}
-	} else if sort != "" {
-		filter += " ORDER BY name " + sort
-		if sizePage != 0 {
-			filter += fmt.Sprintf(" LIMIT %d", sizePage)
-		}
-		if page != 0 {
-			filter += fmt.Sprintf(" OFFSET %d", page*sizePage)
-		}
-	} else if sizePage != 0 {
-		filter += fmt.Sprintf(" LIMIT %d", sizePage)
-		if page != 0 {
-			filter += fmt.Sprintf(" OFFSET %d", page*sizePage)
-		}
+
+	if name != "" || role != "" {
+		filter += " WHERE "
 	}
 
-	if err := d.db.Raw(filter).Find(&AllUsers).Error; err != nil {
+	// Check Filter
+	if name != "" {
+		filter += "LOWER(name) LIKE '%" + strings.ToLower(name) + "%' AND"
+	}
+
+	if role != "" {
+		filter += fmt.Sprintf("role = '%s' ", role)
+	}
+
+	// Remove "AND" if role is empty
+	filter = strings.TrimSuffix(filter, "AND")
+
+	if sort != "" {
+		filter += "ORDER BY name " + sort
+	}
+
+	if sizePage != 0 {
+		filter += fmt.Sprintf("LIMIT %d ", sizePage)
+	}
+
+	if page != 0 {
+		filter += fmt.Sprintf("OFFSET %d", page*sizePage)
+	}
+
+	if err := d.db.Raw(filter).Limit(sizePage).Offset(page * sizePage).Find(&AllUsers).Error; err != nil {
 		log.Warn(err)
 		return []entities.User{}, err
 	}

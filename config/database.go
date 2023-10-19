@@ -9,6 +9,14 @@ import (
 	"gorm.io/gorm"
 )
 
+var DB *gorm.DB
+
+func init() {
+	appConfig := Get()
+	DB = InitDB(appConfig)
+	MigrateDB(DB)
+}
+
 func InitDB(config *AppConfig) *gorm.DB {
 	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=%s TimeZone=%s",
 		config.PostgreDB.Host,
@@ -22,7 +30,7 @@ func InitDB(config *AppConfig) *gorm.DB {
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
 		log.Warn()
-		fmt.Println(err)
+		panic(err)
 	}
 	return db
 }

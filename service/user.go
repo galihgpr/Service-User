@@ -2,7 +2,7 @@ package service
 
 import (
 	"alta-test/entities"
-	"alta-test/model"
+	model "alta-test/repository"
 	"alta-test/view"
 	"fmt"
 
@@ -14,9 +14,9 @@ type ServiceModel struct {
 	model model.ModelUser
 }
 
-func NewServiceModel(ModelUser model.ModelUser) *ServiceModel {
+func NewServiceModel() *ServiceModel {
 	return &ServiceModel{
-		model: ModelUser,
+		model: model.NewModelDB(),
 	}
 }
 
@@ -30,7 +30,7 @@ func (s *ServiceModel) CreateUser(newUser view.AddUser) (view.RespondUser, error
 		log.Warn(err)
 		return view.RespondUser{}, err
 	}
-	fmt.Println(res)
+
 	var respond view.RespondUser
 	copier.Copy(&respond, &res)
 	fmt.Println(respond)
@@ -45,6 +45,7 @@ func (s *ServiceModel) GetAllUsers(name, role, sort string, sizePage, page int) 
 		log.Warn(err)
 		return []view.RespondUser{}, err
 	}
+
 	var respond []view.RespondUser
 	copier.Copy(&respond, &res)
 	return respond, nil

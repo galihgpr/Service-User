@@ -18,11 +18,26 @@ type UserHandler struct {
 	valid   *validator.Validate
 }
 
-func NewUserHandler(Service service.ServiceUser, Valid *validator.Validate) *UserHandler {
+func NewUserHandler() *UserHandler {
 	return &UserHandler{
-		service: Service,
-		valid:   Valid,
+		service: service.NewServiceModel(),
+		valid:   validator.New(),
 	}
+}
+
+// URLMapping : function to map url with it's handler and add authorization validation
+func (u *UserHandler) URLMapping(r *gin.RouterGroup) {
+	u = NewUserHandler()
+
+	// endpoint public
+	r.POST("/login", u.Login())
+
+	// endpoint private use JWT token
+	r.Use(middlewares.MiddlewareJWT())
+	r.POST("", u.CreateUser())
+	r.GET("", u.GetAllUsers())
+	r.GET("/:id", u.GetUserID())
+	r.PUT("/:id", u.UpdateUserID())
 }
 
 // HANDLER LOGIN USER
@@ -74,7 +89,7 @@ func (u *UserHandler) CreateUser() gin.HandlerFunc {
 
 		// Extract Token to Check Role of User
 		_, roleUser := middlewares.ExtractToken(c)
-		if roleUser != "admin" {
+		if roleUser != "1" {
 			c.JSON(http.StatusUnauthorized, view.StatusUnauthorized("Access denied, only admin can access"))
 			return
 		}
@@ -82,6 +97,7 @@ func (u *UserHandler) CreateUser() gin.HandlerFunc {
 		// Binding Create Data User
 		var newUser view.AddUser
 		if err := c.Bind(&newUser); err != nil {
+			fmt.Println(err)
 			c.JSON(http.StatusBadRequest, view.StatusBadRequest("Wrong data input format, JSON OR Form is required"))
 			return
 		}
@@ -124,18 +140,13 @@ func (u *UserHandler) GetAllUsers() gin.HandlerFunc {
 			size = "0"
 		}
 
-		// Extract Token to Check Role of User
+		// Extract Token to Check Role of User Is Admin
 		_, roleUser := middlewares.ExtractToken(c)
-		if roleUser != "admin" && roleUser != "user" {
-			c.JSON(http.StatusUnauthorized, view.StatusUnauthorized("Access denied, only admin & user can access"))
+		if roleUser != "1" {
+			c.JSON(http.StatusUnauthorized, view.StatusUnauthorized("Access denied, only admin can access"))
 			return
 		}
 
-		// Filter Role Active With Value "user", If userRole = "user"
-		if roleUser == "user" {
-			role = "user"
-
-		}
 		// Convert SizePage And Page From String To Int
 		sizePage, err := strconv.Atoi(size)
 		if err != nil {
