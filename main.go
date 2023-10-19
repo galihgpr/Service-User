@@ -1,35 +1,12 @@
 package main
 
 import (
-	"alta-test/config"
-	"alta-test/controller/handler"
 	"alta-test/controller/router"
-	"alta-test/model"
-	"alta-test/service"
-
-	"github.com/gin-gonic/gin"
-	"github.com/go-playground/validator/v10"
 )
 
 func main() {
-	appConfig := config.Get()
-	postgreDB := config.InitDB(appConfig)
-	config.MigrateDB(postgreDB)
 
-	// Inject Model
-	modelUser := model.NewModelDB(postgreDB)
-
-	// Inject Service
-	serviceUser := service.NewServiceModel(modelUser)
-
-	// Inject Handler
-	handlerUser := handler.NewUserHandler(serviceUser, validator.New())
-
-	// Init GIN
-	e := gin.New()
-
-	// Use Router
-	router.Router(e, handlerUser)
+	e := router.Router()
 
 	// Run Apps
 	e.Run(":8000")

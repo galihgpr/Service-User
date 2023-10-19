@@ -40,7 +40,7 @@ func TestCreateUser(t *testing.T) {
 	userRepo := mocks.NewModelUser(t)
 	t.Run("Success Create User", func(t *testing.T) {
 		userRepo.On("CreateUser", mock.Anything).Return(MockUser[0], nil).Once()
-		userService := NewServiceModel(userRepo)
+		userService := NewServiceModel()
 		res, err := userService.CreateUser(NewUser)
 		assert.NoError(t, err)
 		assert.Equal(t, MockUser[0].Name, res.Name)
@@ -50,7 +50,7 @@ func TestCreateUser(t *testing.T) {
 	})
 	t.Run("Error Create User", func(t *testing.T) {
 		userRepo.On("CreateUser", mock.Anything).Return(entities.User{}, errors.New("Error Access Database")).Once()
-		userService := NewServiceModel(userRepo)
+		userService := NewServiceModel()
 		res, err := userService.CreateUser(NewUser)
 		assert.Error(t, err)
 		assert.NotEqual(t, MockUser[0].Name, res.Name)
@@ -72,7 +72,7 @@ func TestGetAllUsers(t *testing.T) {
 
 	t.Run("Success Get All User", func(t *testing.T) {
 		userRepo.On("GetAllUsers", name, role, sort, pageSize, page).Return(MockUser, nil).Once()
-		userService := NewServiceModel(userRepo)
+		userService := NewServiceModel()
 		res, err := userService.GetAllUsers(name, role, sort, pageSize, page)
 		assert.NoError(t, err)
 		assert.Equal(t, MockUser[0].Name, res[0].Name)
@@ -82,7 +82,7 @@ func TestGetAllUsers(t *testing.T) {
 	})
 	t.Run("Error Get All User", func(t *testing.T) {
 		userRepo.On("GetAllUsers", name, role, sort, pageSize, page).Return(nil, errors.New("Error Access Database")).Once()
-		userService := NewServiceModel(userRepo)
+		userService := NewServiceModel()
 		res, err := userService.GetAllUsers(name, role, sort, pageSize, page)
 		assert.Error(t, err)
 		assert.Equal(t, []view.RespondUser{}, res)
@@ -98,7 +98,7 @@ func TestGetUserID(t *testing.T) {
 
 	t.Run("Success Get User ID", func(t *testing.T) {
 		userRepo.On("GetUserID", mock.Anything, "admin").Return(MockUser[0], nil).Once()
-		userService := NewServiceModel(userRepo)
+		userService := NewServiceModel()
 		res, err := userService.GetUserID(uint(1), "admin")
 		assert.NoError(t, err)
 		assert.Equal(t, MockUser[0].Name, res.Name)
@@ -108,7 +108,7 @@ func TestGetUserID(t *testing.T) {
 	})
 	t.Run("Error Get User ID", func(t *testing.T) {
 		userRepo.On("GetUserID", mock.Anything, "admin").Return(entities.User{}, errors.New("Error Access Database")).Once()
-		userService := NewServiceModel(userRepo)
+		userService := NewServiceModel()
 		res, err := userService.GetUserID(uint(1), "admin")
 		assert.Error(t, err)
 		assert.Equal(t, view.RespondUser{}, res)
@@ -123,7 +123,7 @@ func TestUpdateUserID(t *testing.T) {
 	userRepo := mocks.NewModelUser(t)
 	t.Run("Success Update User", func(t *testing.T) {
 		userRepo.On("UpdateUserID", uint(1), mock.Anything).Return(MockUser[0], nil).Once()
-		userService := NewServiceModel(userRepo)
+		userService := NewServiceModel()
 		res, err := userService.UpdateUserID(uint(1), Update)
 		assert.NoError(t, err)
 		assert.Equal(t, MockUser[0].Name, res.Name)
@@ -133,7 +133,7 @@ func TestUpdateUserID(t *testing.T) {
 	})
 	t.Run("Error Update User", func(t *testing.T) {
 		userRepo.On("UpdateUserID", uint(1), mock.Anything).Return(entities.User{}, errors.New("Error Access Database")).Once()
-		userService := NewServiceModel(userRepo)
+		userService := NewServiceModel()
 		res, err := userService.UpdateUserID(uint(1), Update)
 		assert.Error(t, err)
 		assert.NotEqual(t, MockUser[0].Name, res.Name)
@@ -151,13 +151,13 @@ func TestDeleteUserID(t *testing.T) {
 
 	t.Run("Success Delete User ID", func(t *testing.T) {
 		userRepo.On("DeleteUserID", mock.Anything).Return(nil).Once()
-		userService := NewServiceModel(userRepo)
+		userService := NewServiceModel()
 		err := userService.DeleteUserID(uint(1))
 		assert.NoError(t, err)
 	})
 	t.Run("Error Delete User ID", func(t *testing.T) {
 		userRepo.On("DeleteUserID", mock.Anything).Return(errors.New("Error Access Database")).Once()
-		userService := NewServiceModel(userRepo)
+		userService := NewServiceModel()
 		err := userService.DeleteUserID(uint(1))
 		assert.Error(t, err)
 	})
@@ -172,7 +172,7 @@ func TestGetUserLogin(t *testing.T) {
 
 	t.Run("Success Login", func(t *testing.T) {
 		userRepo.On("GetUserLogin", mock.Anything).Return(MockUser[0], nil).Once()
-		userService := NewServiceModel(userRepo)
+		userService := NewServiceModel()
 		res, err := userService.GetUserLogin(User)
 		assert.NoError(t, err)
 		assert.Equal(t, MockUser[0].Name, res.Name)
@@ -182,7 +182,7 @@ func TestGetUserLogin(t *testing.T) {
 	})
 	t.Run("Error Get User Login", func(t *testing.T) {
 		userRepo.On("GetUserLogin", mock.Anything).Return(entities.User{}, errors.New("Error Access Database")).Once()
-		userService := NewServiceModel(userRepo)
+		userService := NewServiceModel()
 		res, err := userService.GetUserLogin(User)
 		assert.Error(t, err)
 		assert.Equal(t, view.RespondUser{}, res)
