@@ -1,6 +1,6 @@
 <div id="top"></div>
 
-<!-- PROJECT LOGO -->
+<!-- PROJECT USER -->
 <br />
 
  
