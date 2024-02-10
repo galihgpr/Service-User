@@ -1,6 +1,6 @@
 <div id="top"></div>
 
-<!-- PROJECT USER Trial 1 -->
+<!-- PROJECT USER Trial 2 -->
 <br />
 
  
